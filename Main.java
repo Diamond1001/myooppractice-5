@@ -1,83 +1,92 @@
-package Helpmepls;
 import java.sql.*;
+
 public class Main {
-    static Connection connection = null;
-    static PreparedStatement pstmt = null;
-
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
-      //  input();
-      // Main.output();
-      //  update();
-        //  drop();
+    public static Connection connection = null;
+    public static PreparedStatement pstmt = null;
+    public static void main(String[] args) {
+    emp emp = new emp();
+    emp.getsetwork();
+    emp.outpos();
+    salary sal=new salary();
+    sal.getsetsalary();
+    sal.outsal();
     }
-    public static void output() {
+}
+//new class
+public class emp {
+    public String[] work = new String[10];
+    public int[] id=new int[10];
+    public int i = 0;
+    public String url = "jdbc:postgresql://localhost:5433/postgres";
+    public String user = "postgres";
+    public String password = "12345";
+    public int salary;
+    public void getsetwork() {
         try {
-            Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5433/postgres", "postgres", "12345");
-            try {
-                Statement stmt = connection.createStatement();
-                String query = "select * from0 java1;";
-                ResultSet rs = stmt.executeQuery(query);
-                while (rs.next()) {
-                    String id = rs.getObject(1).toString();
-                    String name = rs.getObject(2).toString();
-                    String surname = rs.getObject(3).toString();
-                    String grade =rs.getObject(4).toString();
-                    System.out.println("Id  is " + id + " and name is " + name + surname + " grade = "+grade);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-                for (Throwable ex : e) {
-                    System.err.println("Error occurred " + ex);
-                }
-                System.out.println("Error in fetching data");
+            Main.connection = DriverManager.getConnection(url,user ,password );
+            Statement stmt = Main.connection.createStatement();
+            String query = "select * from emp order by id";
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                int id = Integer.parseInt(rs.getObject(1).toString());
+                String name = rs.getObject(2).toString();
+                String work = rs.getObject(3).toString();
+                this.work[i]=work;
+                this.id[i]=id;
+                i++;
             }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
-
-    public static void input() throws SQLException, ClassNotFoundException {
-        Class.forName("org.postgresql.Driver");
-        connection = DriverManager.getConnection("jdbc:postgresql://localhost:5433/postgres", "postgres", "12345");
-        try {
-            String query = "insert into java1 (id, name, surname, grade) values (?,?,?,?);";
-            pstmt = connection.prepareStatement(query);
-            pstmt.setInt(1, 2);
-            pstmt.setString(2,"Max");
-            pstmt.setString(3,"Love");
-            pstmt.setInt(4,80);
-            pstmt.execute();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
-    public static void update() throws SQLException, ClassNotFoundException {
-        Class.forName("org.postgresql.Driver");
-        connection = DriverManager.getConnection("jdbc:postgresql://localhost:5433/postgres", "postgres", "12345");
-        try {
-            String query = "update java1 set name=?,surname=?,grade=? where id=1";
-            pstmt = connection.prepareStatement(query);
-            pstmt.setString(1,"Max");
-            pstmt.setString(2,"Brand");
-            pstmt.setInt(3,90);
-            pstmt.executeUpdate();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
-    public static void drop() throws SQLException, ClassNotFoundException {
-        Class.forName("org.postgresql.Driver");
-        connection = DriverManager.getConnection("jdbc:postgresql://localhost:5433/postgres", "postgres", "12345");
-        try {
-            String query = "delete from java1 where id=2";
-            pstmt = connection.prepareStatement(query);
-            pstmt.executeUpdate();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+    public void outpos(){
+        for(int i = 0;i<7;i++){
+            if(work[i]!=null) {
+                System.out.println(work[i]);
+            }
         }
     }
 }
+//new class
+public class salary extends emp{
+    double[] salar=new double[10];
+    public int i = 0;
 
+    @Override
+    public void getsetwork() {
+        super.getsetwork();
+    }
+
+    public void getsetsalary() {
+        try {
+            Main.connection = DriverManager.getConnection(url, user, password);
+            Statement stmt = Main.connection.createStatement();
+            String query = "select id,position,price from emp inner join projemp on id=empid inner join project on projemp.project_id=project.project_id order by id;";
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                int id = Integer.parseInt(rs.getObject(1).toString());
+                String posit = rs.getObject(2).toString();
+                double price = Double.parseDouble(rs.getObject(3).toString());
+                switch (posit){
+                    case"Manager":{salar[i]+=price*0.45;}
+                    case"Software Engineer":{salar[i]+=price*0.25;}
+                    case"Tester":{salar[i]+=price*0.2;}
+                    case"Designer":{salar[i]+=price*0.15;}
+                    case"Recruit":{salar[i]+=price*0.05;}
+                }
+                i++;
+            }
+        } catch (
+                SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+    public void outsal(){
+        System.out.println("Manager salary = " + salar[0]);
+        System.out.println("Software Engineer = " + salar[1]);
+        System.out.println("Tester = " + salar[2]);
+        System.out.println("Designer = " + salar[3]);
+        System.out.println("Recruit = " + salar[4]);
+    }
+
+}
